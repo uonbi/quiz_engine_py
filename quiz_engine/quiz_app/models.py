@@ -50,7 +50,7 @@ class SentMessagesModel(models.Model):
 	message_id = models.CharField(max_length = 255, default = '')
 	cost = models.FloatField(default = 0)
 
-class ReceivedMessages(models.Model):
+class ReceivedMessagesModel(models.Model):
 	'''
 	A record of the messages received from AfricasTalking API...
 	Kept for logging purposes
