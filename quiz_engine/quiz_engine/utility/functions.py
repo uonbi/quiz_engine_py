@@ -27,4 +27,4 @@ def send_message(phone_number, message, short_code):
         	# recipient['messageId'],
         	# recipient['cost'])
 	except AfricasTalkingGatewayException, e:
-    	print 'Encountered an error while sending: %s' % str(e)
+    	print('Encountered an error while sending: {0}'.format(str(e)))
