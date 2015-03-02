@@ -16,7 +16,7 @@ class MemberModel(models.Model):
 	'''
 
 	name = models.CharField(max_length = 50, default = '')
-	phone_number = models.CharField(max_length = 20, default = '')
+	phone_number = models.CharField(max_length = 20, default = '', unique = True)
 	quiz_count = models.IntegerField(default = 0)
 
 class QuizModel(models.Model):
