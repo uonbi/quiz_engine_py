@@ -20,11 +20,10 @@ def send_message(phone_number, message, short_code):
 	# so wrap the call in a try-catch block
 	try:
     	# Thats it, hit send and we'll take care of the rest. 
-    	recipient = gateway.sendMessage(phone_number, message, short_code)
-    	return recipient
-        	# recipient['number']
-         #   	recipient['status'],
-        	# recipient['messageId'],
-        	# recipient['cost'])
+    	while True:
+    		recipient = gateway.sendMessage(phone_number, message, short_code)
+    		if recipient['status'] == 'Success':
+    			return recipient
+        
 	except AfricasTalkingGatewayException, e:
     	print('Encountered an error while sending: {0}'.format(str(e)))
