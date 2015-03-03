@@ -5,6 +5,7 @@ import re
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 #application specific imports
 from .models import ReceivedMessagesModel
@@ -15,11 +16,14 @@ from quiz_engine.utility.functions import send_message
 
 # Create your views here.
 @require_POST
+@csrf_exempt
 def treasure_hunt(request):
 	'''
 	The function that is executed when a request is sent from the callback url
 	keyed in at the AfricasTalking API
 	'''
+
+	keyword = 'jaribu' #Word to signify start of the treasure hunt
 
 	#get the post data sent
 	phone_number = request.POST.get('from')
@@ -35,14 +39,14 @@ def treasure_hunt(request):
 										message_id = message_id )
 
 	#check if the word jaribu is in the message
-	if 'jaribu' in text.lower():
+	if keyword in text.lower():
 		#check if number is already registered
 		try:
 			MemberModel.objects.get(phone_number = phone_number)
 
 		except MemberModel.DoesNotExist:
 			#get name
-			name = re.sub('jaribu', '' ,text.lower()).replace(' ','').replace('.', '')
+			name = re.sub(keyword, '' ,text.lower()).replace(' ','').replace('.', '')
 			name = name.title()
 			#create the record
 			member = MemberModel(phone_number = phone_number, name = name)
@@ -96,6 +100,6 @@ def treasure_hunt(request):
 
 					
 
-	return HttpResponse('Success')
+	return HttpResponse('Success', status_code = 200)
 
 
