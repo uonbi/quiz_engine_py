@@ -24,7 +24,7 @@ def treasure_hunt(request):
 	keyed in at the AfricasTalking API
 	'''
 
-	keyword = 'jaribu' #Word to signify start of the treasure hunt
+	keyword = 'jaribu' #Keyword assigned to us by AfricasTalking
 
 	#get the post data sent
 	phone_number = request.POST.get('from')
@@ -43,7 +43,36 @@ def treasure_hunt(request):
 	if keyword in text.lower():
 		#check if number is already registered
 		try:
-			MemberModel.objects.get(phone_number = phone_number)
+			member = MemberModel.objects.get(phone_number = phone_number)
+			current_question = member.quiz_count
+			#get the question and check if the submitted answer is correct
+			try:
+				quiz = QuizModel.objects.get(pk = current_question, answer__icontains = text)
+				#log the submission
+				SubmissionModel.objects.create(user = member, quiz = quiz,
+													answer = text, status = "C")
+				#increment to the next question
+				member.quiz_count += 1
+				member.save()
+				if member.quiz_count <= QuizModel.objects.all().count():
+					#send the next question
+					quiz = QuizModel.objects.get(pk = member.quiz_count)
+					response = send_message(phone_number, quiz.question, short_code)
+					#log the message
+					SentMessagesModel.objects.create(short_code = short_code, status = response['status'], phone_number = response['number'],
+													 message_id = response['messageId'], cost = response['cost'], message = quiz.question)
+			except QuizModel.DoesNotExist:
+				#wrong answer
+			
+				quiz = QuizModel.objects.get(pk = current_question)
+				#log the submission
+				SubmissionModel.objects.create(user = member, quiz = quiz,
+													answer = text, status = "W")
+				message = "Wrong Answer. Try Again. {0}".format(quiz.question)
+				response = send_message(phone_number, message, short_code)
+				SentMessagesModel.objects.create(short_code = short_code, status = response['status'], phone_number = response['number'],
+													 message_id = response['messageId'], cost = response['cost'], message = message)
+				
 
 		except MemberModel.DoesNotExist:
 			#get name
@@ -65,52 +94,7 @@ def treasure_hunt(request):
 
 			except QuizModel.DoesNotExist:
 				print("The queried question deont exist.")
-
 			
-	else:
-		#must be a solution to a question
-		
-		try:
-			member = MemberModel.objects.get(phone_number = phone_number)
-			#check the question the member is on
-			current_question = member.quiz_count
-
-		except MemberModel.DoesNotExist:
-			print("Member doesnt exist")	
-
-		#get the question and check if the submitted answer is correct
-		#check if user was found
-		if member.exists():
-			try:
-				quiz = QuizModel.objects.get(pk = current_question, answer__icontains = text)
-				#log the submission
-				SubmissionModel.objects.create(user = member, quiz = quiz,
-					answer = text, status = "C")
-				#increment to the next question
-				member.quiz_count += 1
-				member.save()
-				if member.quiz_count <= QuizModel.objects.all().count():
-					#send the next question
-					quiz = QuizModel.objects.get(pk = member.quiz_count)
-					response = send_message(phone_number, quiz.question, short_code)
-					#log the message
-					SentMessagesModel.objects.create(short_code = short_code, status = response['status'], phone_number = response['number'],
-														 message_id = response['messageId'], cost = response['cost'], message = quiz.question)
-			except QuizModel.DoesNotExist:
-				#wrong answer
-				
-				quiz = QuizModel.objects.get(pk = current_question)
-				#log the submission
-				SubmissionModel.objects.create(user = member, quiz = quiz,
-					answer = text, status = "W")
-				message = "Wrong Answer. Try Again. {0}".format(quiz.question)
-				response = send_message(phone_number, message, short_code)
-				SentMessagesModel.objects.create(short_code = short_code, status = response['status'], phone_number = response['number'],
-														 message_id = response['messageId'], cost = response['cost'], message = message)
-				print("The queried question doesn't exist")		
-
-					
-
 	return HttpResponse('Success', status_code = 200)
 
 
