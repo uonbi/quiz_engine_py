@@ -61,6 +61,13 @@ def treasure_hunt(request):
 					#log the message
 					SentMessagesModel.objects.create(short_code = short_code, status = response['status'], phone_number = response['number'],
 													 message_id = response['messageId'], cost = response['cost'], message = quiz.question)
+				else:
+					# inform user challenge is over
+					message = "Bravo. Here is the key to the treasure chest."
+					response = send_message(phone_number, message, short_code)
+					SentMessagesModel.objects.create(short_code = short_code, status = response['status'], phone_number = response['number'],
+													 message_id = response['messageId'], cost = response['cost'], message = message)
+
 			except QuizModel.DoesNotExist:
 				#wrong answer
 			
