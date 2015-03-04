@@ -25,9 +25,9 @@ config_table = json.loads(data_json)
 SECRET_KEY = '+&6=l67^r9dg%wvqczl6#3%a4q@n00u$dbvphd*$jz*r6!f&w='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-TEMPLATE_DEBUG = False
+TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = ['178.62.9.112', 'helloworld.co.ke', '.helloworld.co.ke']
 
