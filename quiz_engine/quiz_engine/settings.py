@@ -95,3 +95,5 @@ AFRICAS_TALKING = {
     'USERNAME': config_table['AFRICAS_TALKING_USERNAME'],
     'API_KEY':config_table['AFRICAS_TALKING_API_KEY'],
 }
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
