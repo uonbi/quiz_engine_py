@@ -48,7 +48,7 @@ class SentMessagesModel(models.Model):
 	status = models.CharField(max_length = 50, default = '',
 		help_text = "Store the status of the sent message")
 	message_id = models.CharField(max_length = 255, default = '')
-	cost = models.FloatField(default = 0)
+	cost = models.CharField(max_length = 20, default = '')
 	message = models.CharField(max_length = 255, default = '')
 
 class ReceivedMessagesModel(models.Model):

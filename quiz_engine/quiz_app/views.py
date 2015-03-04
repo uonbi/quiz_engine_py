@@ -30,13 +30,13 @@ def treasure_hunt(request):
 	phone_number = request.POST.get('from')
 	short_code  = request.POST.get('to')
 	text = request.POST.get('text')
-	linkId = request.POST.get('linkId')
+	link_id = request.POST.get('linkId')
 	time_received = request.POST.get('date')
 	message_id = request.POST.get('id')
 
 	#save to db
 	ReceivedMessagesModel.objects.create(phone_number = phone_number, short_code = short_code,
-										text = text, linkid = linkid, time_received = time_received, 
+										text = text, linkid = link_id, time_received = time_received, 
 										message_id = message_id )
 
 	#check if the word jaribu is in the message
@@ -45,9 +45,11 @@ def treasure_hunt(request):
 		try:
 			member = MemberModel.objects.get(phone_number = phone_number)
 			current_question = member.quiz_count
+			print('{0} {1}'.format(text, current_question))
 			#get the question and check if the submitted answer is correct
 			try:
-				quiz = QuizModel.objects.get(pk = current_question, answer__icontains = text)
+				text_1 = re.sub(keyword, '' ,text.lower()).replace(' ','').replace('.', '')
+				quiz = QuizModel.objects.get(pk = current_question, answer__icontains = text_1)
 				#log the submission
 				SubmissionModel.objects.create(user = member, quiz = quiz,
 													answer = text, status = "C")
@@ -97,11 +99,10 @@ def treasure_hunt(request):
 				#save the sent message
 				SentMessagesModel.objects.create(short_code = short_code, status = response['status'], phone_number = response['number'],
 													 message_id = response['messageId'], cost = response['cost'], message = quiz.question)
-				break
 
 			except QuizModel.DoesNotExist:
 				print("The queried question deont exist.")
 			
-	return HttpResponse('Success', status_code = 200)
+	return HttpResponse('Success', status = 200)
 
 
