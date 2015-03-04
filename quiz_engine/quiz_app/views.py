@@ -24,7 +24,7 @@ def treasure_hunt(request):
 	keyed in at the AfricasTalking API
 	'''
 	if request.method == 'GET':
-		return HttpResponse("Get method used")
+		return HttpResponse("Get method used", content_type = 'application/json', status = 200)
 	keyword = 'jaribu' #Keyword assigned to us by AfricasTalking
 
 	#get the post data sent
@@ -104,6 +104,6 @@ def treasure_hunt(request):
 			except QuizModel.DoesNotExist:
 				print("The queried question deont exist.")
 			
-	return HttpResponse('Success', status = 200)
+	return HttpResponse('Success', status = 200, content_type = 'application/json')
 
 
