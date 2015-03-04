@@ -16,14 +16,15 @@ from .models import SubmissionModel
 from quiz_engine.utility.functions import send_message
 
 # Create your views here.
-@require_POST
+
 @csrf_exempt
 def treasure_hunt(request):
 	'''
 	The function that is executed when a request is sent from the callback url
 	keyed in at the AfricasTalking API
 	'''
-
+	if request.method == 'GET':
+		return HttpResponse("Get method used")
 	keyword = 'jaribu' #Keyword assigned to us by AfricasTalking
 
 	#get the post data sent
